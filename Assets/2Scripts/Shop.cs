@@ -12,12 +12,12 @@ public class Shop : MonoBehaviour
     public void Enter(Player player)
     {
         enterPlayer = player;
-        uiGroup.anchoredPosition = Vector3.zero + Vector3.down * 300;
+        uiGroup.anchoredPosition = Vector3.zero + Vector3.down * 400;
     }
 
     public void Exit()
     {
         anim.SetTrigger("doHello");
-        uiGroup.anchoredPosition = Vector3.down * 600;
+        uiGroup.anchoredPosition = Vector3.down * 700;
     }
 }
