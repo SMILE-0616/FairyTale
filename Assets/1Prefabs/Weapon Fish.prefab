@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 4805064979554339711}
   m_Layer: 10
   m_Name: Weapon Fish
-  m_TagString: Melee
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

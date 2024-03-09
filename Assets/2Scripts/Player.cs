@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
     bool isSwap; // 무기 교체 중인지 여부
     bool isFireReady = true; // 발사 준비가 되었는지 여부
     bool isReload;
-    bool isDamamge;
+    bool isDamage;
     bool isDead;
 
     Vector3 moveVec; // 이동 방향 벡터
@@ -351,7 +351,7 @@ public class Player : MonoBehaviour
         }
         else if (other.tag == "EnemyBullet")
         {
-            if (!isDamamge)
+            if (!isDamage)
             {
                 Bullet enemyBullet = other.GetComponent<Bullet>();
                 health -= enemyBullet.damage;
@@ -367,18 +367,21 @@ public class Player : MonoBehaviour
 
     IEnumerator OnDamage(bool isBossAtk)
     {
-        isDamamge = true;
-        foreach(MeshRenderer mesh in meshs)
+        isDamage = true;
+        foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.yellow;
         }
 
         if (isBossAtk)
             rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
-        
+
+        if (health <= 0 && !isDead)
+            OnDie();
+
         yield return new WaitForSeconds(1f);
 
-        isDamamge = false;
+        isDamage = false;
         foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.white;
@@ -386,9 +389,6 @@ public class Player : MonoBehaviour
 
         if (isBossAtk)
             rigid.velocity = Vector3.zero;
-
-        if (health <= 0 && !isDead)
-            OnDie();
     }
 
     void OnDie()

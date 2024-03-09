@@ -1,18 +1,15 @@
+/*GameObject Script*/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
-
 public class GameManager : MonoBehaviour
 {
     public GameObject menuCam;
     public GameObject gameCam;
     public Player player;
     public Boss boss;
-    //public GameObject AppleShop;
-    //public GameObject FishShop;
     public GameObject startZone;
     public int stage;
     public float playTime;
@@ -29,6 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject menuPanel;
     public GameObject gamePanel;
     public GameObject overPanel;
+    public GameObject clearPanel;
     public Text maxScoreTxt;
     public Text scoreTxt;
     public Text stageTxt;
@@ -46,11 +44,13 @@ public class GameManager : MonoBehaviour
     public RectTransform bossHealthBar;
     public Text curScoreText;
     public Text bestText;
-
     void Awake()
     {
         enemyList = new List<int>();
         maxScoreTxt.text = string.Format("{0:n0}", PlayerPrefs.GetInt("MaxScore"));
+
+        if (PlayerPrefs.HasKey("MaxScore"))
+            PlayerPrefs.SetInt("MaxScore", 0);
     }
 
     public void GameStart()
@@ -70,11 +70,16 @@ public class GameManager : MonoBehaviour
         curScoreText.text = scoreTxt.text;
 
         int maxScore = PlayerPrefs.GetInt("MaxScore");
-        if(player.score > maxScore)
+        if (player.score > maxScore)
         {
             bestText.gameObject.SetActive(true);
             PlayerPrefs.SetInt("MaxScore", player.score);
         }
+    }
+    public void GameClear()
+    {
+        gamePanel.SetActive(false);
+        clearPanel.SetActive(true);
     }
 
     public void Restart()
@@ -84,31 +89,33 @@ public class GameManager : MonoBehaviour
 
     public void StageStart()
     {
+        isBattle = true;
         startZone.SetActive(false);
 
+        //player.transform.position = Vector3.up * 0.8f;
         foreach (Transform zone in enemyZones)
             zone.gameObject.SetActive(true);
 
-        isBattle = true;
         StartCoroutine(InBattle());
+
     }
+
     public void StageEnd()
     {
-        //player.transform.position = Vector3.up * 0.8f
-
+        isBattle = false;
+        //player.transform.position = Vector3.up * 0.8f;
         startZone.SetActive(true);
 
         foreach (Transform zone in enemyZones)
             zone.gameObject.SetActive(false);
 
 
-        isBattle = false;
         stage++;
     }
 
     IEnumerator InBattle()
     {
-        if (stage == 2) // 스테이지가 5면 D 소환
+        if (stage == 2)
         {
             enemyCntD++;
             GameObject instantEnemy = Instantiate(enemies[3], enemyZones[3].position, enemyZones[3].rotation);
@@ -117,8 +124,9 @@ public class GameManager : MonoBehaviour
             enemy.manager = this;
             boss = instantEnemy.GetComponent<Boss>();
         }
-        else if(stage == 1) // 스테이지 1 
+        else
         {
+
             for (int index = 0; index < stage; index++)
             {
                 int ran = Random.Range(0, 3);
@@ -164,6 +172,7 @@ public class GameManager : MonoBehaviour
     {
         if (isBattle)
             playTime += Time.deltaTime;
+
     }
 
     void LateUpdate() //Update 끝난 후 호출되는 생명주기
@@ -188,9 +197,9 @@ public class GameManager : MonoBehaviour
             playerAmmoTxt.text = player.equipWeapon.curAmmo + " / " + player.ammo;
 
         // 무기 UI
-        weapon1Img.color = new Color(1, 1, 1, player.hasWeapons[0] ? 1 : 0);
-        weapon2Img.color = new Color(1, 1, 1, player.hasWeapons[1] ? 1 : 0);
-        weaponRImg.color = new Color(1, 1, 1, player.hasGrenades > 0 ? 1 : 0);
+        weapon1Img.color = new Color(1, 1, 1, player.hasWeapons[0] ? 1 : 0.3f);
+        weapon2Img.color = new Color(1, 1, 1, player.hasWeapons[1] ? 1 : 0.3f);
+        weaponRImg.color = new Color(1, 1, 1, player.hasGrenades > 0 ? 1 : 0.3f);
 
         // 몬스터 숫자 UI
         enemyATxt.text = "x " + enemyCntA.ToString();
@@ -200,12 +209,12 @@ public class GameManager : MonoBehaviour
         // 보스 체력 UI
         if (boss != null)
         {
-            bossHealthGroup.anchoredPosition = Vector3.zero + Vector3.down * 20;
+            bossHealthGroup.anchoredPosition = Vector3.down * 30;
             bossHealthBar.localScale = new Vector3((float)boss.curHealth / boss.maxHealth, 1, 1);
         }
         else
         {
-            bossHealthGroup.anchoredPosition = Vector3.zero + Vector3.up * 80;
+            bossHealthGroup.anchoredPosition = Vector3.up * 300;
         }
     }
 }

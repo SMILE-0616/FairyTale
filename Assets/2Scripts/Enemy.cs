@@ -125,7 +125,7 @@ public class Enemy : MonoBehaviour
                 break;
             case Type.B:
                 yield return new WaitForSeconds(0.1f);
-                rigid.AddForce(transform.forward * 20, ForceMode.Impulse);
+                rigid.AddForce(transform.forward * 10, ForceMode.Impulse);
                 meleeArea.enabled = true;
                 
                 yield return new WaitForSeconds(0.5f);
@@ -138,7 +138,7 @@ public class Enemy : MonoBehaviour
                 yield return new WaitForSeconds(0.5f);
                 GameObject instantBullet = Instantiate(bullet, transform.position, transform.rotation);
                 Rigidbody rigidBullet = instantBullet.GetComponent<Rigidbody>();
-                rigidBullet.velocity = transform.forward * 20;
+                rigidBullet.velocity = transform.forward * 10;
 
                 yield return new WaitForSeconds(2f);
                 break;
@@ -198,6 +198,11 @@ public class Enemy : MonoBehaviour
         {
             foreach (MeshRenderer mesh in meshs)
                 mesh.material.color = Color.gray;
+
+            if (enemyType == Type.D && curHealth <= 0)
+            {
+                manager.GameClear();
+            }
 
             gameObject.layer = 14;
             isDead = true;
